@@ -15,15 +15,18 @@ squares = list(grid_data.keys())
 grid_state = {square:0 for square in squares}
 
 # find grid dimensions
-height = np.max([int(square[0]) for square in squares])
-width = np.max([int(square[1]) for square in squares])
+min_height = np.min([int(square[0]) for square in squares])
+max_height = np.max([int(square[0]) for square in squares])
+min_width = np.min([int(square[1]) for square in squares])
+max_width = np.max([int(square[1]) for square in squares])
+grid_size = (max_height - min_height + 1) * (max_width - min_width + 1)
 
 # return a list of neighbors for a grid square, accounting for borders
 neighbor_offsets  = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]]
 neighbor_offsets = [np.array(offset) for offset in neighbor_offsets]
 def get_neighbors(index):
 	neighbors_candidates = [index + offset for offset in neighbor_offsets]
-	return [neighbor for neighbor in neighbors_candidates if 0 <= neighbor[0] <= height and 0 <= neighbor[1] <= width]
+	return [neighbor for neighbor in neighbors_candidates if min_height <= neighbor[0] <= max_height and min_width <= neighbor[1] <= max_width]
 
 # calculate transition probabilities for a grid square
 def get_P(index):
@@ -33,18 +36,18 @@ def get_P(index):
 
 	# otherwise, probability of a fire starting is some fixed probability times the number of neighbors on fire
 	neighbors = [tuple(neighbor) for neighbor in get_neighbors(index)]
-	states = [grid_state[index] for index in neighbors]
+	states = [grid_state.get(index,0) for index in neighbors]
 	fire_sum = np.sum(states)
 	p = grid_data[index][0]*fire_sum
 
 	return (1 - p, p)
 
 # time steps in an epoch
-epoch_len = 10
+epoch_len = 5
 
 # start some fires, since currently fires can only spread
 initial_percent_fires = 0.05
-start_fires = random.sample(squares, k=int(np.rint((height + 1) * (width + 1) * initial_percent_fires)))
+start_fires = random.sample(squares, k=int(np.rint(grid_size * initial_percent_fires)))
 grid_state.update(zip(start_fires, [1] * len(start_fires)))
 
 # simulate
@@ -58,6 +61,6 @@ for _ in range(epoch_len):
 	print(time.time() - start_time)
 
 # print % of squares on fire as a sanity check
-percent_fires = np.sum(list(grid_state.values())) / (height + 1) / (width + 1)
+percent_fires = np.sum(list(grid_state.values())) / grid_size
 print(percent_fires)
 
