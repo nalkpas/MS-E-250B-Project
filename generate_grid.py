@@ -6,7 +6,7 @@ width = 100
 
 # generate grid properties, eventually from data
 def gen_square(i, j):
-	return (i,j, np.random.rand() / 8)
+	return (i,j, np.random.rand() / 8, np.random.rand()*1000)
 
 # make and save the grid
 with open('data/grid.txt','w') as file: 

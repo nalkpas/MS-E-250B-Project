@@ -3,6 +3,9 @@ import random
 import time
 import pdb
 
+# control parameters
+graph_flag = True
+
 # load grid data
 grid_data = {}
 with open('data/grid.txt','r') as file:
@@ -42,25 +45,63 @@ def get_P(index):
 
 	return (1 - p, p)
 
+# calculate damage for a grid square for a time step 
+def get_damage(index): 
+	return grid_state[index] * grid_data[index][1] * 0.0001
+
 # time steps in an epoch
-epoch_len = 5
+epoch_len = 60
 
 # start some fires, since currently fires can only spread
-initial_percent_fires = 0.05
-start_fires = random.sample(squares, k=int(np.rint(grid_size * initial_percent_fires)))
+initial_prop_fires = 0.05
+start_fires = random.sample(squares, k=int(np.rint(grid_size * initial_prop_fires)))
 grid_state.update(zip(start_fires, [1] * len(start_fires)))
 
-# simulate
+# initialization for the simulation
+total_damage = 0
+if graph_flag:
+	graph = []
 start_time = time.time()
-for _ in range(epoch_len):
+print('period\tcalc time\tprop fires\ttotal damage')
+
+# simulate
+for t in range(epoch_len):
 	new_state = grid_state.copy()
 	for square in squares: 
 		P = get_P(square)
 		new_state[square] = np.random.choice(len(P), p = P)
-	grid_state = new_state
-	print(time.time() - start_time)
 
-# print % of squares on fire as a sanity check
-percent_fires = np.sum(list(grid_state.values())) / grid_size
-print(percent_fires)
+		damage = get_damage(square)
+		total_damage += damage
+		grid_data[square][1] -= damage
+	grid_state = new_state
+
+	if graph_flag:
+		prop_fires = np.sum(list(grid_state.values())) / grid_size
+		end_time = time.time()
+		print(str(t) + '\t' + str(round(end_time - start_time,3)) + '\t\t' + str(round(prop_fires,3)) + '\t\t' + str(round(total_damage,3)))
+		start_time = end_time
+		graph.append([t, prop_fires, total_damage])
+
+# graph damage over time
+if graph_flag:
+	import matplotlib.pyplot as plt
+	graph = np.array(graph)
+	times = graph[:,0]
+	fires = graph[:,1]
+	damages = graph[:,2]
+
+	plt.subplot(1,2,1)
+	plt.plot(times,fires)
+	plt.title('Fire Proliferation Over Time')
+	plt.xlabel('time')
+	plt.ylabel('percent squares on fire')
+
+	plt.subplot(1,2,2)
+	plt.title('Damage Over Time')
+	plt.plot(times,damages)
+	plt.xlabel('time')
+	plt.ylabel('damage')
+
+	plt.show()
 
