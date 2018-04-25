@@ -6,6 +6,7 @@ width = 100
 
 # generate grid properties, eventually from data
 def gen_square(i, j):
+	# we currently randomly assign each grid square a "fire regime" and "utility value"
 	return (i,j, np.random.rand() / 8, np.random.rand()*1000)
 
 # make and save the grid

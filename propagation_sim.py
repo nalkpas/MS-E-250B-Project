@@ -47,6 +47,7 @@ def get_P(index):
 
 # calculate damage for a grid square for a time step 
 def get_damage(index): 
+	# the level of fire times the value of the square times a fixed proportion of damage over a time step
 	return grid_state[index] * grid_data[index][1] * 0.0001
 
 # time steps in an epoch
