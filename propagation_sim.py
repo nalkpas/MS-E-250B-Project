@@ -51,7 +51,7 @@ def get_damage(index):
 	return grid_state[index] * grid_data[index][1] * 0.0001
 
 # time steps in an epoch
-epoch_len = 60
+epoch_len = 300
 
 # start some fires, since currently fires can only spread
 initial_prop_fires = 0.05
@@ -74,7 +74,7 @@ for t in range(epoch_len):
 
 		damage = get_damage(square)
 		total_damage += damage
-		grid_data[square][1] -= damage
+		grid_data[square][1] = max(grid_data[square][1] - damage, 0)
 	grid_state = new_state
 
 	if graph_flag:
