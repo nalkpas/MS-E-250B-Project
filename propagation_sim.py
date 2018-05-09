@@ -51,7 +51,7 @@ def get_damage(index):
 	return grid_state[index] * grid_data[index][1] * 0.0001
 
 # time steps in an epoch
-epoch_len = 300
+epoch_len = 302
 
 # start some fires, since currently fires can only spread
 initial_prop_fires = 0.05
