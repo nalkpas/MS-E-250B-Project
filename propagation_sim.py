@@ -3,13 +3,19 @@ import time
 import os
 import pdb
 
-# control parameters
-# whether to make damage histographs
-hist_flag = False
-heatmap_flag = True
+####################################################################################################																			
+# parameters
+####################################################################################################
 
 # number of simulations
 num_simulations = 1
+
+# whether to make damage histographs
+hist_flag = False
+# whether to a heatmap series
+heatmap_flag = True
+
+# number of simulations
 
 # grid parameters
 grid_height = 10
@@ -35,6 +41,10 @@ wind_lookup = {0: [[-2,0]],
 			   3: [[0,-2]]}
 wind = np.random.choice(range(4))
 
+####################################################################################################																			
+# helper functions
+####################################################################################################
+
 # return a list of neighbors for a grid square, accounting for borders
 neighbor_offsets  = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]] + wind_lookup[wind]
 neighbor_offsets = [np.array(offset) for offset in neighbor_offsets]
@@ -42,10 +52,22 @@ def get_neighbors(index):
 	neighbors_candidates = [index + offset for offset in neighbor_offsets]
 	return [tuple(neighbor) for neighbor in neighbors_candidates if 0 <= neighbor[0] < grid_height and 0 <= neighbor[1] < grid_width]
 
+# find how many nearby squares are on fire
 def get_fire_sum(grid_data, grid_state, index):
 	neighbors = get_neighbors(index)
 	states = [grid_state[index][0] for index in neighbors]
 	return np.sum(states)
+
+# choose an initial cell based on the relative flammability of each cell
+def get_init_square():
+	p = master_grid_data[...,0].reshape(-1,1).flatten()
+	p = p / np.sum(p)
+	start_index = np.random.choice(range(grid_height*grid_width), p=p)
+	return (start_index // grid_width, start_index % grid_width)
+
+####################################################################################################																		
+# transition functions
+####################################################################################################
 
 # calculate transition probabilities for a grid square
 def get_P(grid_data, grid_state, index):
@@ -80,12 +102,9 @@ def get_consumed_fuel(grid_data, grid_state, index):
 	# a fixed proportion of fuel burns each time step
 	return grid_state[index][0]*grid_data[index][3] * 0.1
 
-# choose an initial cell based on the relative flammability of each cell
-def get_init_square():
-	p = master_grid_data[...,0].reshape(-1,1).flatten()
-	p = p / np.sum(p)
-	start_index = np.random.choice(range(grid_height*grid_width), p=p)
-	return (start_index // grid_width, start_index % grid_width)
+####################################################################################################																		
+# simulation
+####################################################################################################
 
 # initialize graphs
 if hist_flag:
