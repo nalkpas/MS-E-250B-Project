@@ -5,9 +5,9 @@ import pdb
 
 # control parameters
 # grid parameters
-grid_path = 'data/small_grid.txt'
 grid_height = 10
 grid_width = 10
+grid_path = 'data/grid_' + str(height) + 'x' + str(width) + '.txt'
 num_covariates = 4
 
 # number of simulations

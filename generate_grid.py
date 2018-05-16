@@ -15,8 +15,9 @@ for value in unique_values:
 
 height = len(grid)
 width = len(grid[0])
+grid_path = 'data/test_grid_' + str(height) + 'x' + str(width) + '.txt'
 
-with open('data/test_grid.txt', 'w') as file:
+with open(grid_path, 'w') as file:
 	for x in range(height):
 		for y in range(width):
 			file.write(str(x) + ',' + str(y) + ',')
