@@ -4,18 +4,18 @@ import os
 import pdb
 
 # control parameters
+# whether to make damage histographs
+hist_flag = False
+heatmap_flag = True
+
+# number of simulations
+num_simulations = 1
+
 # grid parameters
 grid_height = 10
 grid_width = 10
 grid_path = 'data/grid_' + str(height) + 'x' + str(width) + '.txt'
 num_covariates = 4
-
-# number of simulations
-num_simulations = 1
-
-# whether to make damage histographs
-hist_flag = False
-heatmap_flag = True
 
 # small number to handle rounding errors/dividing by zero
 eps = 0.0000001
@@ -62,13 +62,18 @@ def get_P(grid_data, grid_state, index):
 
 # calculate damage for a grid square for a time step 
 def get_damage(grid_data, grid_state, index): 
-	# the level of fire times the value of the square times a fixed proportion of damage over a time step
-	return (grid_state[index][0] * grid_data[index][1] * 0.01, grid_state[index][0] * grid_data[index][2] * 0.01)
+	# a fixed proportion of damage happens each time step
+	return (grid_state[index][0] * grid_data[index][1] * 0.05, grid_state[index][0] * grid_data[index][2] * 0.05)
 
 # calculate how many people evacuate
 def get_evac(grid_data, grid_state, index):
 	# currently uses modified sigmoid function so that a greater proportion of people evacuate over time
 	return (2 / (1 + np.exp(-grid_state[index][1])) - 1) * grid_data[index][2]
+
+# calculate how much fuel burns
+def get_consumed_fuel(grid_data, grid_state, index):
+	# a fixed proportion of fuel burns each time step
+	return grid_state[index][0]*grid_data[index][3] * 0.1
 
 # choose an initial cell based on the relative flammability of each cell
 def get_init_square():
@@ -149,13 +154,14 @@ for i in range(num_simulations):
 				total_building_damage += building_damage
 				total_lives_lost += lives_lost
 
-				# calculate the number of people who've evacuated
+				# calculate how many people have evacuated and how much fuel burns
 				people_evacuated = get_evac(grid_data, grid_state, index)
+				consumed_fuel = get_consumed_fuel(grid_data, grid_state, index)
 
 				# update grid covariates
 				grid_data[index][1] = max(grid_data[index][1] - building_damage, 0)
 				grid_data[index][2] = max(grid_data[index][2] - lives_lost - people_evacuated, 0)
-				grid_data[index][3] = grid_data[index][3] * 0.9
+				grid_data[index][3] = max(grid_data[index][3] - get_consumed_fuel, 0)
 		grid_state = new_state
 
 		fire_lifespan += 1
