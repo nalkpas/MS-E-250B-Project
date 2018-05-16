@@ -1,5 +1,0 @@
-logging states?
-fuel level
-firefighter agent?
-check damage accumulation
-visualization
