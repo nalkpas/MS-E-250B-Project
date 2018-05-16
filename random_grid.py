@@ -1,14 +1,15 @@
 import numpy as np 
 
 # height and width of grid
-grid_path = 'data/grid.txt'
-height = 100
-width = 100
+height = 10
+width = 10
+grid_path = 'data/grid_' + str(height) + 'x' + str(width) + '.txt'
+
 
 # generate grid properties, eventually from data
 def gen_square(i, j):
 	# we currently randomly assign each grid square a "flammability", "utility", "population", and "fuel level"
-	return (i,j, (0.5 + np.random.rand()/2) / 6, np.random.rand()*1000, np.random.rand()*100, 0.5 + np.random.rand()/2)
+	return (i,j, (0.5 + np.random.rand()/2) / 8, np.random.rand()*1000, np.random.rand()*100, 0.5 + np.random.rand()/2)
 
 # make and save the grid
 with open(grid_path,'w') as file: 
