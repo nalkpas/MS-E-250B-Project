@@ -9,7 +9,7 @@ grid_width = 100
 num_covariates = 4
 
 # number of simulations
-num_simulations = 300
+num_simulations = 2
 
 # whether to graph damage
 graph_flag = True
@@ -165,4 +165,6 @@ if graph_flag:
 	ax3.set_title('Histogram of Fire Length')
 	ax3.set(xlabel = 'Fire Length', ylabel = 'Proportion of Fires')
 
-	plt.show()
+	fig.set_figwidth(20)
+	fig.savefig("histograms_" + str(num_simulations) + "sims.png")
+	fig.show()
