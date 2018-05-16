@@ -1,18 +1,21 @@
 import numpy as np 
 import time
+import os
 import pdb
 
 # control parameters
 # grid parameters
-grid_height = 100
-grid_width = 100
+grid_path = 'data/small_grid.txt'
+grid_height = 10
+grid_width = 10
 num_covariates = 4
 
 # number of simulations
-num_simulations = 2
+num_simulations = 1
 
-# whether to graph damage
-graph_flag = True
+# whether to make damage histographs
+hist_flag = False
+heatmap_flag = True
 
 # small number to handle rounding errors/dividing by zero
 eps = 0.0000001
@@ -20,7 +23,7 @@ eps = 0.0000001
 # load grid data
 # order of covariates: flammability, utility, population, fuel level 
 master_grid_data = np.zeros((grid_height, grid_width, num_covariates))
-with open('data/grid.txt','r') as file:
+with open(grid_path,'r') as file:
 	for line in file:
 		row = line.strip().split(',')
 		master_grid_data[int(row[0]), int(row[1])] = np.array(row[2:])
@@ -53,7 +56,7 @@ def get_P(grid_data, grid_state, index):
 
 	# otherwise, probability of a fire starting is some fixed probability times the number of neighbors on fire
 	fire_sum = get_fire_sum(grid_data, grid_state, index)
-	p = grid_data[index][0]*fire_sum
+	p = min(grid_data[index][0]*fire_sum,1)
 
 	return (1 - p, p)
 
@@ -75,17 +78,29 @@ def get_init_square():
 	return (start_index // grid_width, start_index % grid_width)
 
 # initialize graphs
-if graph_flag:
+if hist_flag:
 	damage_hist = []
 	lives_hist = []
 	length_hist = []
 
+if heatmap_flag:
+	example_fire = np.random.choice(range(num_simulations))
+	folder_label = np.random.choice(999999)
+	path = 'charts/heatmap_' + str(folder_label)
+
+	if not os.path.exists(path):
+		os.makedirs(path)
+	else:
+		print('bad hash, exiting')
+		exit()
+
+# simulation loop
 for i in range(num_simulations):
 	# initialize environment
 	grid_data = master_grid_data.copy()
 	# first coordinate is fire status. 0 means no fire, positive integers for various fire states (currently, just 1 means fire)
 	# second coordinate is how many time steps the square has been alerted of a fire
-	grid_state = np.zeros((grid_height, grid_width, 2))
+	grid_state = np.zeros((grid_height, grid_width, 2), dtype=int)
 
 	# start a fire
 	grid_state[get_init_square()] = 1
@@ -95,6 +110,10 @@ for i in range(num_simulations):
 	total_building_damage = 0
 	total_lives_lost = 0
 	fire_lifespan = 0
+
+	if heatmap_flag:
+		if i == example_fire:
+			np.savetxt(path + '/' + str(fire_lifespan) + '.txt', grid_state[...,0], fmt='%1i' ,delimiter=',')
 
 	# simulate
 	while np.sum(grid_state[...,0]) > eps:
@@ -136,18 +155,22 @@ for i in range(num_simulations):
 				# update grid covariates
 				grid_data[index][1] = max(grid_data[index][1] - building_damage, 0)
 				grid_data[index][2] = max(grid_data[index][2] - lives_lost - people_evacuated, 0)
-				grid_data[index][3] = grid_data[index][3] / 10
+				grid_data[index][3] = grid_data[index][3] * 0.9
 		grid_state = new_state
 
 		fire_lifespan += 1
-	if graph_flag:
+		if heatmap_flag:
+			if i == example_fire:
+				np.savetxt(path + '/' + str(fire_lifespan) + '.txt', grid_state[...,0], fmt='%1i' ,delimiter=',')
+
+	if hist_flag:
 		damage_hist.append(total_building_damage)
 		lives_hist.append(total_lives_lost)
 		length_hist.append(fire_lifespan)
 	print(str(i) + ': ' + str(time.time() - start_time) + 's')
 
 # create histograms
-if graph_flag:
+if hist_flag:
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 
