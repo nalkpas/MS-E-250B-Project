@@ -57,8 +57,13 @@ def get_P(grid_data, grid_state, index):
 	# otherwise, probability of a fire starting is some fixed probability times the number of neighbors on fire
 	fire_sum = get_fire_sum(grid_data, grid_state, index)
 	p = min(grid_data[index][0]*fire_sum,1)
-
 	return (1 - p, p)
+
+# calculate the probability of getting an alert
+def get_p_alert(grid_data, grid_state, index):
+	# baseline alert rate + how many nearby squares are on fire
+	fire_sum = get_fire_sum(grid_data, grid_state, index)
+	return 0.05 + fire_sum / len(neighbor_offsets) * 0.95
 
 # calculate damage for a grid square for a time step 
 def get_damage(grid_data, grid_state, index): 
@@ -143,10 +148,7 @@ for i in range(num_simulations):
 				elif grid_state[index][0] > 0:
 					new_state[index][1] += 1
 				else:
-					fire_sum = get_fire_sum(grid_data, grid_state, index)
-					p_alert = 0.05 + fire_sum / len(neighbor_offsets) * 0.95
-					if p_alert < 0 or p_alert > 1:
-						pdb.set_trace()
+					p_alert = get_p_alert(grid_data, grid_state, index)
 					new_state[index][1] += np.random.choice(range(2), p = [1 - p_alert, p_alert])
 
 				# calculate damage
