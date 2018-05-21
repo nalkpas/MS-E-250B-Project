@@ -7,38 +7,23 @@ import pdb
 # parameters
 ####################################################################################################
 
-# number of simulations
-num_simulations = 1
+# control parameters
+scenario = 'InitialValues'
+num_simulations = 10
+hist_flag = True 			# whether to make damage histographs
+heatmap_flag = False		# whether to a heatmap series
 
-# whether to make damage histographs
-hist_flag = False
-# whether to a heatmap series
-heatmap_flag = True
-
-# number of simulations
-
-# grid parameters
-grid_height = 10
-grid_width = 10
-grid_path = 'data/grid_' + str(height) + 'x' + str(width) + '.txt'
+# these parameters should mostly stay the same 
+grid_height = 50
+grid_width = 50
 num_covariates = 4
-
-# small number to handle rounding errors/dividing by zero
-eps = 0.0000001
-
-# load grid data
-# order of covariates: flammability, utility, population, fuel level 
-master_grid_data = np.zeros((grid_height, grid_width, num_covariates))
-with open(grid_path,'r') as file:
-	for line in file:
-		row = line.strip().split(',')
-		master_grid_data[int(row[0]), int(row[1])] = np.array(row[2:])
+eps = 0.0000001		# small number to handle rounding errors/dividing by zero
 
 # define what squares wind effects, randomly decide wind direction
-wind_lookup = {0: [[-2,0]],
-			   1: [[2,0]],
-			   2: [[0,2]],
-			   3: [[0,-2]]}
+wind_lookup = {0: [[-2,0], [-2,1], [-2,-1]],
+			   1: [[2,0], [2,1], [2,-1]],
+			   2: [[0,2], [1,2], [-1,2]],
+			   3: [[0,-2], [1,-2], [-1,-2]]}
 wind = np.random.choice(range(4))
 
 ####################################################################################################																			
@@ -76,9 +61,10 @@ def get_P(grid_data, grid_state, index):
 		p = np.exp(-grid_data[index][3])
 		return (p, 1 - p)
 
-	# otherwise, probability of a fire starting is some fixed probability times the number of neighbors on fire
+	# otherwise, probability of a fire starting is the square's flammability times the number of neighbors 
+	# on fire, multiplied by the fuel level factor
 	fire_sum = get_fire_sum(grid_data, grid_state, index)
-	p = min(grid_data[index][0]*fire_sum,1)
+	p = min(grid_data[index][0]*fire_sum,1) * (1 - np.exp(-grid_data[index][3]))
 	return (1 - p, p)
 
 # calculate the probability of getting an alert
@@ -90,6 +76,7 @@ def get_p_alert(grid_data, grid_state, index):
 # calculate damage for a grid square for a time step 
 def get_damage(grid_data, grid_state, index): 
 	# a fixed proportion of damage happens each time step
+	# tuple of property damage, lives lost
 	return (grid_state[index][0] * grid_data[index][1] * 0.05, grid_state[index][0] * grid_data[index][2] * 0.05)
 
 # calculate how many people evacuate
@@ -102,9 +89,18 @@ def get_consumed_fuel(grid_data, grid_state, index):
 	# a fixed proportion of fuel burns each time step
 	return grid_state[index][0]*grid_data[index][3] * 0.1
 
-####################################################################################################																		
-# simulation
+####################################################################################################																			
+# initial processing
 ####################################################################################################
+
+# load grid data
+# order of covariates: flammability, utility, population, fuel level 
+master_grid_data = np.zeros((grid_height, grid_width, num_covariates))
+grid_path = 'data/grids/' + scenario + '_grid_' + str(grid_height) + 'x' + str(grid_width) + '.csv'
+with open(grid_path,'r') as file:
+	for line in file:
+		row = line.strip().split(',')
+		master_grid_data[int(row[0]), int(row[1])] = np.array(row[2:])
 
 # initialize graphs
 if hist_flag:
@@ -114,8 +110,8 @@ if hist_flag:
 
 if heatmap_flag:
 	example_fire = np.random.choice(range(num_simulations))
-	folder_label = np.random.choice(999999)
-	path = 'charts/heatmap_' + str(folder_label)
+	current_time = int(round(time.time(),0))
+	path = 'charts/heatmap_' + str(current_time)
 
 	if not os.path.exists(path):
 		os.makedirs(path)
@@ -123,7 +119,10 @@ if heatmap_flag:
 		print('bad hash, exiting')
 		exit()
 
+####################################################################################################																		
 # simulation loop
+####################################################################################################
+
 for i in range(num_simulations):
 	# initialize environment
 	grid_data = master_grid_data.copy()
@@ -182,7 +181,7 @@ for i in range(num_simulations):
 				# update grid covariates
 				grid_data[index][1] = max(grid_data[index][1] - building_damage, 0)
 				grid_data[index][2] = max(grid_data[index][2] - lives_lost - people_evacuated, 0)
-				grid_data[index][3] = max(grid_data[index][3] - get_consumed_fuel, 0)
+				grid_data[index][3] = max(grid_data[index][3] - consumed_fuel, 0)
 		grid_state = new_state
 
 		fire_lifespan += 1
@@ -216,5 +215,5 @@ if hist_flag:
 	ax3.set(xlabel = 'Fire Length', ylabel = 'Proportion of Fires')
 
 	fig.set_figwidth(20)
-	fig.savefig("histograms_" + str(num_simulations) + "sims.png")
+	fig.savefig('charts/' + scenario + '_histogram_' + str(num_simulations) + 'sims.png')
 	fig.show()

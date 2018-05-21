@@ -1,10 +1,9 @@
 import numpy as np 
 
 # height and width of grid
-height = 10
-width = 10
-grid_path = 'data/grid_' + str(height) + 'x' + str(width) + '.txt'
-
+height = 100
+width = 100
+grid_path = 'data/grids/random_grid_' + str(height) + 'x' + str(width) + '.csv'
 
 # generate grid properties, eventually from data
 def gen_square(i, j):
