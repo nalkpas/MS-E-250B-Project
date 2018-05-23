@@ -8,8 +8,8 @@ import pdb
 ####################################################################################################
 
 # control parameters
-scenario = 'InitialValues'
-num_simulations = 10
+scenario = 'DefensibleSpace'
+num_simulations = 200
 hist_flag = True 			# whether to make damage histographs
 heatmap_flag = False		# whether to a heatmap series
 
@@ -221,5 +221,5 @@ if hist_flag:
 	ax3.set(xlabel = 'Fire Length', ylabel = 'Proportion of Fires')
 
 	fig.set_figwidth(20)
-	fig.savefig('charts/' + scenario + '_histogram_' + str(num_simulations) + 'sims.png')
+	fig.savefig('charts/' + scenario + '_histogram_' + str(num_simulations) + 'episodes.png')
 	fig.show()
