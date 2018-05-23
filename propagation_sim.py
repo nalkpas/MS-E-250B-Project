@@ -17,7 +17,7 @@ heatmap_flag = False		# whether to a heatmap series
 grid_height = 50
 grid_width = 50
 num_covariates = 4
-eps = 0.0000001		# small number to handle rounding errors/dividing by zero
+eps = 0.000000001		# small number to handle rounding errors/dividing by zero
 
 # define what squares wind effects, randomly decide wind direction
 wind_lookup = {0: [[-2,0], [-2,1], [-2,-1]],
@@ -197,6 +197,10 @@ for i in range(num_simulations):
 
 # create histograms
 if hist_flag:
+	damage_mean = np.mean(damage_hist)
+	lives_mean = np.mean(lives_hist)
+	length_mean = np.mean(length_hist)
+
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 
