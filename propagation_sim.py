@@ -8,7 +8,7 @@ import pdb
 ####################################################################################################
 
 # control parameters
-scenario = 'DefensibleSpace'
+scenario = 'Vegetation'
 num_simulations = 200
 hist_flag = True 			# whether to make damage histographs
 heatmap_flag = False		# whether to a heatmap series
