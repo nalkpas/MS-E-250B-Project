@@ -201,6 +201,8 @@ if hist_flag:
 	lives_mean = np.mean(lives_hist)
 	length_mean = np.mean(length_hist)
 
+	print(scenario + '\naverage damage: ' + str(damage_mean) + '\naverage deaths: ' + str(lives_mean) + '\naverage length: ' + str(length_mean))
+
 	import matplotlib.pyplot as plt
 	import seaborn as sns
 
