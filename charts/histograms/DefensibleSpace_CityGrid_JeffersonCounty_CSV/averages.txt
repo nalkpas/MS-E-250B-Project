@@ -1,0 +1,4 @@
+DefensibleSpace
+average damage: 5963088.980746166
+average deaths: 1.043486693789935
+average length: 49.676

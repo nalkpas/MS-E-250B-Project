@@ -1,0 +1,4 @@
+InitialValues
+average damage: 7131103.885104768
+average deaths: 1.206006944002175
+average length: 45.804

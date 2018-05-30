@@ -1,0 +1,4 @@
+IWUIC
+average damage: 351620.37484677683
+average deaths: 0.06090617900729927
+average length: 11.142

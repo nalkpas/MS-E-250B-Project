@@ -1,0 +1,4 @@
+Buildings
+average damage: 3176925.80943437
+average deaths: 0.42517014179194057
+average length: 48.41

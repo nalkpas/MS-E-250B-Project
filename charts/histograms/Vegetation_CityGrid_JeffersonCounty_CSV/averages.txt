@@ -1,0 +1,4 @@
+Vegetation
+average damage: 795156.1548629059
+average deaths: 0.23218159179421435
+average length: 12.244
