@@ -2,14 +2,18 @@ import numpy as np
 import time
 import os
 import pdb
+import sys
 
 ####################################################################################################																			
 # parameters
 ####################################################################################################
+# hacky automation support
+scenario = sys.argv[1]
+map_name = sys.argv[2]
 
 # control parameters
-scenario = 'IWUIC'
-map_name = 'CityGrid_JeffersonCounty_CSV'
+# scenario = 'IWUIC'
+# map_name = 'CityGrid_JeffersonCounty_CSV'
 # map_name = 'JeffCo_firebreaks'
 num_simulations = 300
 hist_flag = True 			# whether to make damage histographs
@@ -144,7 +148,7 @@ for i in range(num_simulations):
 	# choose wind direction
 	wind = np.random.choice(range(4))
 	set_wind(wind)
-	
+
 	# initialize trackers
 	start_time = time.time()
 	total_building_damage = 0
