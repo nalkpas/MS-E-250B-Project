@@ -2,11 +2,15 @@ import numpy as np
 import csv
 import pdb
 
+map_name = 'CityGrid_JeffersonCounty_CSV'
 scenarios = ['InitialValues', 'DefensibleSpace', 'IWUIC', 'Buildings', 'Vegetation']
-for scenario in scenarios: 
-	map_path = 'data/CityGrid_JeffersonCounty_CSV.csv'
-	lookup_path = 'data/cell_lookups/' + scenario + '.csv'
 
+# map_name = 'JeffCo_firebreaks'
+# scenarios = ['InitialValues']
+
+map_path = 'data/' + map_name + '.csv'
+for scenario in scenarios: 
+	lookup_path = 'data/cell_lookups/' + scenario + '.csv'
 
 	with open(map_path, 'r') as file:
 		grid = [line.strip().split(",") for line in file]
@@ -34,7 +38,7 @@ for scenario in scenarios:
 
 	height = len(grid)
 	width = len(grid[0])
-	grid_path = 'data/grids/' + scenario + '_grid_' + str(height) + 'x' + str(width) + '.csv'
+	grid_path = 'data/grids/' + map_name + '-' + scenario + '_grid_' + str(height) + 'x' + str(width) + '.csv'
 
 	def process_covariate(covariate):
 		if type(covariate) == float:

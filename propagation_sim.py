@@ -9,7 +9,9 @@ import pdb
 
 # control parameters
 scenario = 'Vegetation'
-num_simulations = 200
+map_name = 'CityGrid_JeffersonCounty_CSV'
+# map_name = 'JeffCo_firebreaks'
+num_simulations = 10
 hist_flag = True 			# whether to make damage histographs
 heatmap_flag = False		# whether to a heatmap series
 
@@ -96,7 +98,7 @@ def get_consumed_fuel(grid_data, grid_state, index):
 # load grid data
 # order of covariates: flammability, utility, population, fuel level 
 master_grid_data = np.zeros((grid_height, grid_width, num_covariates))
-grid_path = 'data/grids/' + scenario + '_grid_' + str(grid_height) + 'x' + str(grid_width) + '.csv'
+grid_path = 'data/grids/' + map_name + '-' + scenario + '_grid_' + str(grid_height) + 'x' + str(grid_width) + '.csv'
 with open(grid_path,'r') as file:
 	for line in file:
 		row = line.strip().split(',')
@@ -201,25 +203,24 @@ if hist_flag:
 	lives_mean = np.mean(lives_hist)
 	length_mean = np.mean(length_hist)
 
-	print(scenario + '\naverage damage: ' + str(damage_mean) + '\naverage deaths: ' + str(lives_mean) + '\naverage length: ' + str(length_mean))
+	print('\n' + scenario + '\naverage damage: ' + str(damage_mean) + '\naverage deaths: ' + str(lives_mean) + '\naverage length: ' + str(length_mean))
 
-	import matplotlib.pyplot as plt
-	import seaborn as sns
+	path = 'charts/histograms/' + scenario + '_' + map_name
 
-	fig, axs = plt.subplots(ncols = 3)
+	if not os.path.exists(path):
+		os.makedirs(path)
 
-	ax1 = sns.distplot(a=damage_hist, ax = axs[0])
-	ax1.set_title('Histogram of Building Damage')
-	ax1.set(xlabel = 'Building Damage', ylabel = 'Proportion of Fires')
+	with open(path + '/damage_hist.txt','w') as file:
+		for damage in damage_hist[:-1]:
+			file.write(str(damage) + '\n')
+		file.write(str(damage_hist[-1]))
 
-	ax2 = sns.distplot(a=lives_hist, ax = axs[1])
-	ax2.set_title('Histogram of Lives Lost')
-	ax2.set(xlabel = 'Lives Lost', ylabel = 'Proportion of Fires')
+	with open(path + '/lives_hist.txt','w') as file:
+		for deaths in lives_hist[:-1]:
+			file.write(str(deaths) + '\n')
+		file.write(str(lives_hist[-1]))
 
-	ax3 = sns.distplot(a=length_hist, ax = axs[2])
-	ax3.set_title('Histogram of Fire Length')
-	ax3.set(xlabel = 'Fire Length', ylabel = 'Proportion of Fires')
-
-	fig.set_figwidth(20)
-	fig.savefig('charts/' + scenario + '_histogram_' + str(num_simulations) + 'episodes.png')
-	fig.show()
+	with open(path + '/length_hist.txt','w') as file:
+		for length in length_hist[:-1]:
+			file.write(str(length) + '\n')
+		file.write(str(length_hist[-1]))
