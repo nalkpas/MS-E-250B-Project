@@ -8,10 +8,10 @@ import pdb
 ####################################################################################################
 
 # control parameters
-scenario = 'Vegetation'
+scenario = 'IWUIC'
 map_name = 'CityGrid_JeffersonCounty_CSV'
 # map_name = 'JeffCo_firebreaks'
-num_simulations = 10
+num_simulations = 300
 hist_flag = True 			# whether to make damage histographs
 heatmap_flag = False		# whether to a heatmap series
 
@@ -21,20 +21,26 @@ grid_width = 50
 num_covariates = 4
 eps = 0.000000001		# small number to handle rounding errors/dividing by zero
 
-# define what squares wind effects, randomly decide wind direction
+# define what squares wind effects, randomly decide wind direction, create a list of neighbors
 wind_lookup = {0: [[-2,0], [-2,1], [-2,-1]],
 			   1: [[2,0], [2,1], [2,-1]],
 			   2: [[0,2], [1,2], [-1,2]],
 			   3: [[0,-2], [1,-2], [-1,-2]]}
 wind = np.random.choice(range(4))
+neighbor_offsets  = [[[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]] + wind_lookup[wind]]
+neighbor_offsets = [np.array(offset) for offset in neighbor_offsets]
 
 ####################################################################################################																			
 # helper functions
 ####################################################################################################
+# reset the list of neighboring squares based on wind direction
+def set_wind(wind):
+	global neighbor_offsets
+	neighbor_offsets  = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]] + wind_lookup[wind]
+	neighbor_offsets = [np.array(offset) for offset in neighbor_offsets]
+	return
 
 # return a list of neighbors for a grid square, accounting for borders
-neighbor_offsets  = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]] + wind_lookup[wind]
-neighbor_offsets = [np.array(offset) for offset in neighbor_offsets]
 def get_neighbors(index):
 	neighbors_candidates = [index + offset for offset in neighbor_offsets]
 	return [tuple(neighbor) for neighbor in neighbors_candidates if 0 <= neighbor[0] < grid_height and 0 <= neighbor[1] < grid_width]
@@ -135,6 +141,10 @@ for i in range(num_simulations):
 	# start a fire
 	grid_state[get_init_square()] = 1
 
+	# choose wind direction
+	wind = np.random.choice(range(4))
+	set_wind(wind)
+	
 	# initialize trackers
 	start_time = time.time()
 	total_building_damage = 0
