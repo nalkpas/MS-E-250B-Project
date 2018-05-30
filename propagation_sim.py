@@ -15,7 +15,7 @@ map_name = sys.argv[2]
 # scenario = 'IWUIC'
 # map_name = 'CityGrid_JeffersonCounty_CSV'
 # map_name = 'JeffCo_firebreaks'
-num_simulations = 300
+num_simulations = 500
 hist_flag = True 			# whether to make damage histographs
 heatmap_flag = False		# whether to a heatmap series
 
@@ -213,12 +213,6 @@ for i in range(num_simulations):
 
 # create histograms
 if hist_flag:
-	damage_mean = np.mean(damage_hist)
-	lives_mean = np.mean(lives_hist)
-	length_mean = np.mean(length_hist)
-
-	print('\n' + scenario + '\naverage damage: ' + str(damage_mean) + '\naverage deaths: ' + str(lives_mean) + '\naverage length: ' + str(length_mean))
-
 	path = 'charts/histograms/' + scenario + '_' + map_name
 
 	if not os.path.exists(path):
@@ -238,3 +232,8 @@ if hist_flag:
 		for length in length_hist[:-1]:
 			file.write(str(length) + '\n')
 		file.write(str(length_hist[-1]))
+
+	with open(path + '/averages.txt', 'w') as file:
+		file.write(scenario + '\naverage damage: ' + str(np.mean(damage_hist)))
+		file.write('\naverage deaths: ' + str(np.mean(lives_hist)))
+		file.write('\naverage length: ' + str(np.mean(length_hist)))
