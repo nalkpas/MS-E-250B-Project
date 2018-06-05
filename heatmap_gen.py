@@ -8,15 +8,7 @@ path = 'charts/heatmap_541975/'
 image_path = 'charts/jefferson_county.JPG'
 fire_length = 12
 
-def transparent_cmap(cmap, N=255):
-    mycmap = cmap
-    mycmap._init()
-    mycmap._lut[:,-1] = np.linspace(0, 0.8, N+4)
-    return mycmap
-mycmap = transparent_cmap(plt.cm.Reds)
-
 map_image = Image.open(image_path)
-
 for i in range(fire_length + 1):
 	grid_state = np.loadtxt(path + str(i) + '.txt', delimiter=',')
 	fig, ax = plt.subplots(figsize=(5, 5))
