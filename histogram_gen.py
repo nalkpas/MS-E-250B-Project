@@ -40,7 +40,7 @@ for scenario, file_name in zip(hists, file_names):
 		axs[i] = sns.distplot(a=scenario[i], ax=axs[i], hist=True, kde=False, norm_hist=False, axlabel=hist_axis_labels[i][0])
 		axs[i].set_title(hist_titles[i] + ' (' + str(num_episodes) + ' episodes)')
 		# ax[i].set(xlabel = hist_axis_labels[i][0], ylabel = hist_axis_labels[i][1])
-		axs[i].text(hist_maxes[i]*0.5,num_episodes*0.6,'mean : ' + str(np.round(np.mean(scenario[i]),3)),fontsize=10)
+		axs[i].text(hist_maxes[i]*0.55,num_episodes*0.85,'mean : ' + str(np.round(np.mean(scenario[i]),3)),fontsize=12)
 		axs[i].set_xlim(left=0,right=hist_maxes[i])
 		axs[i].set_ylim(bottom=0,top=num_episodes)
 
