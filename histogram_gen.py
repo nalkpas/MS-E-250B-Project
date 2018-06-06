@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pdb
 
-map_names = ['CityGrid_JeffersonCounty_CSV', 'JeffCo_firebreaks']
-scenarios = {'CityGrid_JeffersonCounty_CSV': ['InitialValues', 'DefensibleSpace', 'IWUIC', 'Buildings', 'Vegetation'],
-			 'JeffCo_firebreaks': ['InitialValues']}
+map_names = ['main_grid', 'firebreaks']
+scenarios = {'main_grid': ['InitialValues', 'DefensibleSpace', 'IWUIC', 'Buildings', 'Vegetation'],
+			 'firebreaks': ['InitialValues']}
 hist_names = ['damage_hist', 'lives_hist', 'length_hist']
 hist_titles = ['Building Damage', 'Number of Deaths', 'Fire Lengths']
 hist_axis_labels = ['Building Damage ($)', 'Number of Deaths', 'Fire Length (time steps)']

@@ -8,20 +8,21 @@ import sys
 # parameters
 ####################################################################################################
 # hacky automation support
-scenario = sys.argv[1]
-map_name = sys.argv[2]
+# scenario = sys.argv[1]
+# map_name = sys.argv[2]
 
 # control parameters
-# scenario = 'IWUIC'
-# map_name = 'CityGrid_JeffersonCounty_CSV'
-# map_name = 'JeffCo_firebreaks'
-num_simulations = 500
-hist_flag = True 			# whether to make damage histographs
-heatmap_flag = False		# whether to a heatmap series
+scenario = 'InitialValues'
+map_name = 'main_grid'
+# map_name = 'firebreaks'
+num_simulations = 2
+hist_flag = False 			# whether to make damage histographs
+heatmap_flag = True		# whether to a heatmap series
+
 
 # these parameters should mostly stay the same 
-grid_height = 50
-grid_width = 50
+grid_height = 10
+grid_width = grid_height
 num_covariates = 4
 eps = 0.000000001		# small number to handle rounding errors/dividing by zero
 
@@ -108,7 +109,8 @@ def get_consumed_fuel(grid_data, grid_state, index):
 # load grid data
 # order of covariates: flammability, utility, population, fuel level 
 master_grid_data = np.zeros((grid_height, grid_width, num_covariates))
-grid_path = 'data/grids/' + map_name + '-' + scenario + '_grid_' + str(grid_height) + 'x' + str(grid_width) + '.csv'
+# grid_path = 'data/grids/' + map_name + '-' + scenario + '_grid_' + str(grid_height) + 'x' + str(grid_width) + '.csv'
+grid_path = 'data/grids/test_grid.csv'
 with open(grid_path,'r') as file:
 	for line in file:
 		row = line.strip().split(',')
@@ -158,6 +160,8 @@ for i in range(num_simulations):
 	if heatmap_flag:
 		if i == example_fire:
 			np.savetxt(path + '/' + str(fire_lifespan) + '.txt', grid_state[...,0], fmt='%1i' ,delimiter=',')
+			with open(path + '/details.txt','w') as file:
+				file.write('wind: ' + str(wind))
 
 	# simulate
 	while np.sum(grid_state[...,0]) > eps:

@@ -1,0 +1,12 @@
+InitialValues_main_grid: 	do	cost: 0	damages: 7723525.943925176
+DefensibleSpace_main_grid: 	do	cost: 5	damages: 5963094.198179635
+IWUIC_main_grid: 	do	cost: 10	damages: 351620.67937767186
+Buildings_main_grid: 	do	cost: 5	damages: 3176927.9352850793
+Vegetation_main_grid: 	do	cost: 5	damages: 795157.3157708648
+InitialValues_firebreaks: 	do	cost: 10	damages: 7131109.915139488
+InitialValues_main_grid: 	do	cost: 0	damages: 7723532.794138729
+DefensibleSpace_main_grid: 	do	cost: 5	damages: 5963099.415613104
+IWUIC_main_grid: 	do	cost: 10	damages: 351620.9839085669
+Buildings_main_grid: 	do	cost: 5	damages: 3176930.061135788
+Vegetation_main_grid: 	do	cost: 5	damages: 795158.4766788238
+InitialValues_firebreaks: 	do	cost: 10	damages: 7131115.945174208
