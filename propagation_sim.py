@@ -19,7 +19,6 @@ num_simulations = 2
 hist_flag = False 			# whether to make damage histographs
 heatmap_flag = True		# whether to a heatmap series
 
-
 # these parameters should mostly stay the same 
 grid_height = 10
 grid_width = grid_height
