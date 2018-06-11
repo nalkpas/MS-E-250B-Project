@@ -37,6 +37,7 @@ for scenario, file_name in zip(hists, file_names):
 
 	fig, axs = plt.subplots(ncols = n)
 
+	print(file_name)
 	for i in range(n):
 		axs[i] = sns.distplot(a=scenario[i], ax=axs[i], hist=True, kde=False, norm_hist=False, axlabel=hist_axis_labels[i][0])
 		axs[i].set_title(hist_titles[i] + ' (' + str(num_episodes) + ' episodes)')
@@ -44,6 +45,7 @@ for scenario, file_name in zip(hists, file_names):
 		axs[i].text(hist_maxes[i]*0.6,num_episodes*0.825,'mean : {0:.3e}\nstdev:  {1:.3e}'.format(np.mean(scenario), np.std(scenario)) ,fontsize=12)
 		axs[i].set_xlim(left=0,right=hist_maxes[i])
 		axs[i].set_ylim(bottom=0,top=num_episodes)
+		print(round(np.mean(scenario[i]),3))
 
 	fig.set_figwidth(20)
 	fig.savefig(file_name)
